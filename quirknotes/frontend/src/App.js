@@ -40,10 +40,49 @@ function App() {
 
   const deleteNote = (entry) => {
     // Code for DELETE here
+
+    try{
+      fetch(`http://localhost:4000/deleteNote/${entry._id}`, {method: 'DELETE'})
+      .then(async (response) => {
+        if (!response.ok){
+          console.log("Delete request failed:", response.status);
+        }else {
+          console.log("Note deleted successfully!");
+          deleteNoteState(entry._id);
+        }
+      })
+    }catch (error){
+      console.log("Error while processing the delete note request:", error);
+      alert("Failed to delete the note.");
+    }
+
   }
 
   const deleteAllNotes = () => {
     // Code for DELETE all notes here
+    try {
+      fetch("http://localhost:4000/deleteAllNotes", {
+        method: 'DELETE',
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            console.log("Delete all notes request failed:", response.status);
+            // Handle errors if needed
+          } else {
+            await response.json().then((data) => {
+              deleteAllNotesState();
+              console.log(data.response); // Log the response
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Error while processing the delete all notes request::", error);
+          alert("Failed to delete all notes.");
+        });
+    } catch (error) {
+      console.log("Error while processing the delete all notes request:", error);
+      alert("Failed to delete all notes. ");
+    }
   }
 
   
@@ -72,16 +111,29 @@ function App() {
     setNotes((prevNotes) => [...prevNotes, {_id, title, content}])
   }
 
-  const deleteNoteState = () => {
+  const deleteNoteState = (deletedNoteId) => {
     // Code for modifying state after DELETE here
+    setNotes((prevNotes) => prevNotes.filter((note) => note._id !== deletedNoteId))
   }
 
   const deleteAllNotesState = () => {
     // Code for modifying state after DELETE all here
+    setNotes([]);
   }
 
   const patchNoteState = (_id, title, content) => {
     // Code for modifying state after PATCH here
+    setNotes((prevNotes) => {
+      const index = prevNotes.findIndex((note) => note._id === _id);
+  
+      if (index !== -1) {
+        const updatedNotes = [...prevNotes];
+        updatedNotes[index] = { ...updatedNotes[index], title, content };
+        return updatedNotes;
+      }
+      return prevNotes;
+      
+    });
   }
 
   return (

@@ -56,6 +56,35 @@ function Dialog({open, initialNote, closeDialog, postNote: postNoteState}) {
 
     const patchNote = (entry) => {
         // Code for PATCH here
+        if (!note || !note.title || !note.content) {
+            return;
+        }
+
+        setStatus("Loading...");
+
+        try {
+            fetch(`http://localhost:4000/patchNote/${initialNote._id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title: note.title, content: note.content }),
+            })
+            .then(async (response) => {
+                if (!response.ok) {
+                setStatus(`Error trying to patch note`);
+                console.log("Served failed:", response.status);
+                } else {
+                await response.json().then((data) => {
+                    postNoteState(data.insertedId, note.title, note.content);
+                    setStatus("Note patched!");
+                });
+                }
+            });
+        } catch (error) {
+            setStatus("Error trying to patch note");
+            console.log("Error while patching note:", error);
+        }
     }
 
     return (
