@@ -126,7 +126,7 @@ app.patch("/patchNote/:noteId", express.json(), async (req, res) => {
     // Find note with given ID
     const collection = db.collection(COLLECTIONS.notes);
     const data = await collection.updateOne({
-      username: decoded.username,
+      //username: decoded.username,
       _id: new ObjectId(noteId),
     }, {
       $set: {

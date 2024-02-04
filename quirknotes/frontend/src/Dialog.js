@@ -3,7 +3,7 @@ import './App.css';
 
 const baseNote = {title: "", content: ""}
 
-function Dialog({open, initialNote, closeDialog, postNote: postNoteState}) {
+function Dialog({open, initialNote, closeDialog, postNote: postNoteState, patchNote: patchNoteState}) {
 
     // -- Dialog props --
     const [note, setNote] = useState(baseNote)
@@ -63,7 +63,7 @@ function Dialog({open, initialNote, closeDialog, postNote: postNoteState}) {
         setStatus("Loading...");
 
         try {
-            fetch(`http://localhost:4000/patchNote/${initialNote._id}`, {
+            fetch(`http://localhost:4000/patchNote/${note._id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -76,7 +76,7 @@ function Dialog({open, initialNote, closeDialog, postNote: postNoteState}) {
                 console.log("Served failed:", response.status);
                 } else {
                 await response.json().then((data) => {
-                    postNoteState(data.insertedId, note.title, note.content);
+                    patchNoteState(note._id, note.title, note.content);
                     setStatus("Note patched!");
                 });
                 }
